@@ -85,7 +85,7 @@ Deploy the contract to NEAR testnet or mainnet using NEAR CLI commands.
 
 **Initialize the contract:**
 ```bash
-near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "social.near"}' --accountId YOUR_ACCOUNT.testnet
+near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "v1.social08.testnet"}' --accountId YOUR_ACCOUNT.testnet
 ```
 
 ## Calculate Rankings
@@ -93,13 +93,15 @@ near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "social.near"}' --
 To calculate rankings for a user:
 
 ```bash
-near call your-account.testnet calc_rank '{"seed_accounts": ["seed1.testnet"], "user_id": "user1.testnet", "seed_strategy": 0, "localtrust_strategy": 0}' --accountId your-account.testnet
+near call eigenrank.testnet calc_rank '{"seed_accounts": ["seed1.testnet"], "user_id": "user1.testnet", "seed_strategy": 0, "localtrust_strategy": 0}' --accountId your-account.testnet
 ```
 
-**Overview of `calc_rank` **
+**Overview of `calc_rank`**
+
 The `calc_rank` function is a core component of the Eigenrank contract. It is designed to calculate trust rankings for users within a social network based on their interactions. This method interacts with the socialDB contract to fetch interaction data, process it, and compute rankings based on the Eigenrank algorithm.
 
-**Function Signature **
+**Function Signature**
+
 ```rust
 pub fn calc_rank(
     &self,
@@ -122,19 +124,19 @@ near call eigenrank.testnet calc_rank '{"seed_accounts": ["trusted1.near", "trus
 ### Parameters
 1. **seed_accounts (`Vec<String>`):**
    - **Description:** A list of account IDs that are used as seed nodes for the trust calculation. These accounts are considered trusted by default and influence the trust calculation for other users.
-   - **Customization:** Users can customize this list based on which accounts they want to influence the trust scores in the network. More trusted nodes typically provide a stronger foundation for the trust graph.
+   - Users can customize this list based on which accounts they want to influence the trust scores in the network. More trusted nodes typically provide a stronger foundation for the trust graph.
 
 2. **user_id (`String`):**
    - **Description:** The NEAR account ID of the user for whom the trust rank is being calculated.
-   - **Customization:** This is dynamically set to the user's account ID for whom the rank needs to be computed.
+   - This is dynamically set to the user's account ID for whom the rank needs to be computed.
 
 3. **seed_strategy (`u8`):**
    - **Description:** A numerical identifier that specifies the algorithm or method used to integrate the seed accounts' trust values into the overall trust calculation.
-   - **Customization:** Different strategies can be implemented and identified by unique `u8` values. For example, `0` might represent a basic influence method where seed accounts contribute equally, whereas `1` could represent a weighted method where different seeds have different levels of influence based on additional metrics.
+   - Different strategies can be implemented and identified by unique `u8` values. For example, `0` might represent a basic influence method where seed accounts contribute equally, whereas `1` could represent a weighted method where different seeds have different levels of influence based on additional metrics.
 
 4. **localtrust_strategy (`u8`):**
    - **Description:** A numerical identifier that determines how local trust scores are computed from the raw interaction data. This affects how interactions between users are converted into trust values.
-   - **Customization:** Like the seed strategy, different methods can be employed, each represented by a different `u8` value. Strategy `0` might simply count interactions, while strategy `1` might consider the type and recency of interactions.
+   - Like the seed strategy, different methods can be employed, each represented by a different `u8` value. Strategy `0` might simply count interactions, while strategy `1` might consider the type and recency of interactions.
 
 ### How It Works
 - The function initiates a promise to call the `get_interactions` method on the social database contract, passing the `user_id` to fetch interaction data.
@@ -155,10 +157,7 @@ near call eigenrank.testnet calc_rank '{"seed_accounts": ["trusted1.near", "trus
 - After each iteration, global_trust and next_global_trust are swapped. This makes the next round of computations use the most recently calculated values.
 - next_global_trust is then reset to zero for all values to prepare for the next iteration. This reset is crucial as it clears the accumulated values, ensuring that each iteration starts fresh based on the latest calculations.
 
-**Implementation of Attenuation**
-The concept of "attenuation" in this context refers to the gradual reduction in the influence or trust propagated from one entity to another over multiple iterations or layers of relationships. By limiting the number of iterations and by the nature of the multiplication of trust scores, the influence of any given entity's trust diminishes as it propagates further away in the network. This mimics real-world trust dynamics, where trust diminishes as it passes through multiple intermediaries.
-
-In summary, the implementation you provided leverages the power iteration method to simulate the propagation and attenuation of trust scores in a network, allowing for a controlled and realistic model of trust dynamics over a network of entities.
+`calc_rank` results in a gradual reduction in the influence or trust propagated from one entity to another over multiple iterations or layers of relationships. By limiting the number of iterations and by the nature of the multiplication of trust scores, the influence of any given entity's trust diminishes as it propagates further away in the network. This mimics real-world trust dynamics, where trust diminishes as it passes through multiple intermediaries. The implementation leverages the power iteration method to simulate the propagation and attenuation of trust scores in a network, allowing for a controlled and realistic model of trust dynamics over a network of entities.
 
 #### Conclusion
 The `calc_rank` function is a powerful tool for calculating user trust within a network, leveraging predefined seed accounts and customizable strategies to adapt to various trust models. By understanding and correctly setting its parameters, users can effectively influence and interpret the trust dynamics within their applications.

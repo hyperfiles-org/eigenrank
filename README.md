@@ -85,7 +85,7 @@ Deploy the contract to NEAR testnet or mainnet using NEAR CLI commands.
 
 **Initialize the contract:**
 ```bash
-near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "v1.social08.testnet"}' --accountId YOUR_ACCOUNT.testnet
+near call eigenrank.testnet new '{"social_db_contract_id": "v1.social08.testnet"}' --accountId YOUR_ACCOUNT.testnet
 ```
 
 ## Calculate Rankings

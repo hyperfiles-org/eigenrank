@@ -143,6 +143,20 @@ struct Ranking {
     score: f64,
 }
 
+#[derive(Serialize, Deserialize)]
+enum SeedStrategy {
+    Basic,
+    Enhanced
+}
+
+#[derive(Serialize, Deserialize)]
+enum LocalTrustStrategy {
+    ExistingConnections,
+    L1Rep1Rec1M1Enhanced,
+    L1Rep6Rec3M12Enhanced,
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;

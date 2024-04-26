@@ -100,6 +100,53 @@ To calculate rankings for a user:
 near call your-account.testnet calc_rank '{"seed_accounts": ["seed1.testnet"], "user_id": "user1.testnet", "seed_strategy": 0, "localtrust_strategy": 0}' --accountId your-account.testnet
 ```
 
+### Overview of `calc_rank`
+The `calc_rank` function is a core component of the EigenTrustContract on the NEAR platform. It is designed to calculate trust rankings for users within a social network based on their interactions. This method interacts with a specified social database contract to fetch interaction data and then processes this data to compute rankings based on the EigenTrust algorithm.
+
+#### Function Signature
+```rust
+pub fn calc_rank(
+    &self,
+    seed_accounts: Vec<String>,
+    user_id: String,
+    seed_strategy: u8,
+    localtrust_strategy: u8
+)
+```
+
+#### Parameters
+1. **seed_accounts (`Vec<String>`):**
+   - **Description:** A list of account IDs that are used as seed nodes for the trust calculation. These accounts are considered trusted by default and influence the trust calculation for other users.
+   - **Customization:** Users can customize this list based on which accounts they want to influence the trust scores in the network. More trusted nodes typically provide a stronger foundation for the trust graph.
+
+2. **user_id (`String`):**
+   - **Description:** The NEAR account ID of the user for whom the trust rank is being calculated.
+   - **Customization:** This is dynamically set to the user's account ID for whom the rank needs to be computed.
+
+3. **seed_strategy (`u8`):**
+   - **Description:** A numerical identifier that specifies the algorithm or method used to integrate the seed accounts' trust values into the overall trust calculation.
+   - **Customization:** Different strategies can be implemented and identified by unique `u8` values. For example, `0` might represent a basic influence method where seed accounts contribute equally, whereas `1` could represent a weighted method where different seeds have different levels of influence based on additional metrics.
+
+4. **localtrust_strategy (`u8`):**
+   - **Description:** A numerical identifier that determines how local trust scores are computed from the raw interaction data. This affects how interactions between users are converted into trust values.
+   - **Customization:** Like the seed strategy, different methods can be employed, each represented by a different `u8` value. Strategy `0` might simply count interactions, while strategy `1` might consider the type and recency of interactions.
+
+#### How It Works
+- The function initiates a promise to call the `get_interactions` method on the social database contract, passing the `user_id` to fetch interaction data.
+- Upon successful retrieval of interaction data, a follow-up promise is made to `process_interactions`, which processes the interaction data along with the initial parameters (`seed_accounts`, `user_id`, `seed_strategy`, `localtrust_strategy`) to calculate the final trust rankings.
+
+#### Usage Example
+```bash
+near call eigenrank.testnet calc_rank '{"seed_accounts": ["trusted1.near", "trusted2.near"], "user_id": "user123.near", "seed_strategy": 0, "localtrust_strategy": 1}' --accountId caller_account.testnet
+```
+
+#### Error Handling
+- Ensure all account IDs are valid NEAR accounts.
+- The strategies should correspond to implemented methods in the contract. Using an undefined strategy will result in a runtime error.
+
+#### Conclusion
+The `calc_rank` function is a powerful tool for calculating user trust within a network, leveraging predefined seed accounts and customizable strategies to adapt to various trust models. By understanding and correctly setting its parameters, users can effectively influence and interpret the trust dynamics within their applications.
+
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.

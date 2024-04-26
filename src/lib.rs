@@ -133,7 +133,7 @@ struct Interaction {
     follower: String,
     follows: String,
     mentions: usize,
-    recasts: usize,
+    reposts: usize,
     replies: usize,
 }
 
@@ -156,6 +156,25 @@ enum LocalTrustStrategy {
     L1Rep6Rec3M12Enhanced,
 }
 
+struct StrategyConfig {
+    likes_weight: u8,
+    replies_weight: u8,
+    reposts_weight: u8,
+    mentions_weight: u8,
+    boost_weight: u8,
+}
+
+impl Default for StrategyConfig {
+    fn default() -> Self {
+        Self {
+            likes_weight: 1,
+            replies_weight: 1,
+            reposts_weight: 1,
+            mentions_weight: 1,
+            boost_weight: 0,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

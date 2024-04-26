@@ -1,11 +1,11 @@
 
-# EigenTrust NEAR Smart Contract
+# EigenRank NEAR Smart Contract
 
-This repository contains the Rust-based NEAR smart contract implementation of the Eigentrust algorithm. It is designed to interact with the socialDB contract deployed on the NEAR blockchain, calculating global profile rankings based on user interactions.
+This repository contains the Rust-based NEAR smart contract implementation of the Eigenrank algorithm. It is designed to interact with the socialDB contract deployed on the NEAR blockchain, calculating global profile rankings based on user interactions.
 
 ## Features
 
-- **Eigentrust Algorithm Implementation:** Implements a modified version of the Eigentrust algorithm to calculate trust scores based on social interactions.
+- **Eigenrank Algorithm Implementation:** Implements a modified version of the Eigenrank algorithm to calculate trust scores based on social interactions.
 - **Integration with socialDB:** Fetches interaction data from the socialDB contract.
 - **Storage of Rankings:** Rankings are computed and then stored back in the socialDB contract under each user's profile.
 
@@ -29,11 +29,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/eigentrust-near.git
+   git clone https://github.com/hyperfiles-org/eigenrank
    ```
 2. Navigate into the project directory:
    ```bash
-   cd eigentrust-near
+   cd hyperfiles-org/eigenrank
    ```
 
 ### Building the Contract
@@ -69,18 +69,6 @@ To deploy the contract to the NEAR testnet:
 
 Replace `your-account.testnet` with your actual NEAR testnet account name.
 
-### Usage
-Deploy the contract to NEAR testnet or mainnet using NEAR CLI commands.
-
-**Deploy using:**
-```bash
-near deploy --wasmFile target/wasm32-unknown-unknown/release/eigentrust_near.wasm --accountId YOUR_ACCOUNT.testnet
-```
-
-**Initialize the contract:**
-```bash
-near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "social.near"}' --accountId YOUR_ACCOUNT.testnet
-```
 ### Additional Tips
 Dependencies: Ensure all required build tools and dependencies are installed, such as the Rust toolchain and the wasm32-unknown-unknown target.
 
@@ -92,6 +80,14 @@ Optimization Tool: If your contract is large or you want to optimize for perform
 
 Automation: You can integrate this script into CI/CD pipelines for automated builds and deployments.
 
+### Usage
+Deploy the contract to NEAR testnet or mainnet using NEAR CLI commands.
+
+**Initialize the contract:**
+```bash
+near call YOUR_ACCOUNT.testnet new '{"social_db_contract_id": "social.near"}' --accountId YOUR_ACCOUNT.testnet
+```
+
 ## Calculate Rankings
 
 To calculate rankings for a user:
@@ -101,7 +97,7 @@ near call your-account.testnet calc_rank '{"seed_accounts": ["seed1.testnet"], "
 ```
 
 **Overview of `calc_rank` **
-The `calc_rank` function is a core component of the EigenTrustContract on the NEAR platform. It is designed to calculate trust rankings for users within a social network based on their interactions. This method interacts with a specified social database contract to fetch interaction data and then processes this data to compute rankings based on the EigenTrust algorithm.
+The `calc_rank` function is a core component of the Eigenrank contract. It is designed to calculate trust rankings for users within a social network based on their interactions. This method interacts with the socialDB contract to fetch interaction data, process it, and compute rankings based on the Eigenrank algorithm.
 
 **Function Signature **
 ```rust
@@ -157,7 +153,7 @@ near call eigenrank.testnet calc_rank '{"seed_accounts": ["trusted1.near", "trus
 - Accumulation: The calculated contribution is added to next_global_trust for the corresponding pair.
 4. Swapping and Resetting:
 - After each iteration, global_trust and next_global_trust are swapped. This makes the next round of computations use the most recently calculated values.
-next_global_trust is then reset to zero for all values to prepare for the next iteration. This reset is crucial as it clears the accumulated values, ensuring that each iteration starts fresh based on the latest calculations.
+- next_global_trust is then reset to zero for all values to prepare for the next iteration. This reset is crucial as it clears the accumulated values, ensuring that each iteration starts fresh based on the latest calculations.
 
 **Implementation of Attenuation**
 The concept of "attenuation" in this context refers to the gradual reduction in the influence or trust propagated from one entity to another over multiple iterations or layers of relationships. By limiting the number of iterations and by the nature of the multiplication of trust scores, the influence of any given entity's trust diminishes as it propagates further away in the network. This mimics real-world trust dynamics, where trust diminishes as it passes through multiple intermediaries.
@@ -179,11 +175,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 - Illia, Eugene, James, Elliot
 - Karma3
-- Original authors of the Eigentrust algorithm
+- [Original authors of the Eigentrust algorithm](https://nlp.stanford.edu/pubs/eigentrust.pdf)
 
 ---
-
-### Notes:
-- **Customization**: Replace placeholders like `https://github.com/your-username/eigentrust-near.git` with actual URLs.
-- **Additional Files**: Include a `CONTRIBUTING.md` and `LICENSE.md` in your repository.
-- **Community and Support**: Encourage community interaction by including links to issues, discussions, and support channels.

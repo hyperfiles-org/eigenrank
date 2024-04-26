@@ -7,11 +7,11 @@ use sha2::{Digest, Sha256};  // Ensure this is imported for using Sha256
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
-pub struct EigenTrustContract {
+pub struct EigenrankContract {
     social_db_contract_id: AccountId,
 }
 
-impl Default for EigenTrustContract {
+impl Default for EigenrankContract {
     fn default() -> Self {
         Self { 
             social_db_contract_id: "example.testnet".parse().expect("Invalid AccountId"),
@@ -20,7 +20,7 @@ impl Default for EigenTrustContract {
 }
 
 #[near_bindgen]
-impl EigenTrustContract {
+impl EigenrankContract {
     #[init]
     pub fn new(social_db_contract_id: AccountId) -> Self {
         Self { 
@@ -72,7 +72,7 @@ impl EigenTrustContract {
     
         // Step 1: Calculate local trust
         for interaction in interactions {
-            let weight = 1.0 + interaction.mentions as f64 + interaction.recasts as f64 + interaction.replies as f64;
+            let weight = 1.0 + interaction.mentions as f64 + interaction.reposts as f64 + interaction.replies as f64;
             *local_trust.entry((interaction.follower, interaction.follows)).or_insert(0.0) += weight;
         }
     
@@ -194,15 +194,15 @@ mod tests {
 
     fn setup_mock_data() -> Vec<Interaction> {
         vec![
-            Interaction { follower: "user1.near".to_string(), follows: "user2.near".to_string(), mentions: 1, recasts: 1, replies: 1 },
-            Interaction { follower: "user2.near".to_string(), follows: "user1.near".to_string(), mentions: 2, recasts: 2, replies: 2 }
+            Interaction { follower: "user1.near".to_string(), follows: "user2.near".to_string(), mentions: 1, reposts: 1, replies: 1 },
+            Interaction { follower: "user2.near".to_string(), follows: "user1.near".to_string(), mentions: 2, reposts: 2, replies: 2 }
         ]
     }
 
     #[test]
     fn test_local_trust_calculation() {
         let interactions = setup_mock_data();
-        let contract = EigenTrustContract::new("social.near".to_string());
+        let contract = EigenrankContract::new("social.near".to_string());
         let _seed_accounts = vec!["trusted_user.near".to_string()];
         
         let rankings = contract.calculate_eigenrank(interactions, _seed_accounts, 0, 0);
@@ -217,7 +217,7 @@ mod tests {
     fn test_global_trust_convergence() {
         let context = get_context(false);
         testing_env!(context);
-        let contract = EigenTrustContract::new("social.near".to_string());
+        let contract = EigenrankContract::new("social.near".to_string());
         
         // Simulate a scenario where global trust scores should converge after several iterations
         contract.calc_rank(vec!["seed1.near".to_string()], "user1.near".to_string(), 0, 0);
@@ -230,7 +230,7 @@ mod tests {
     fn test_calc_rank_effect() {
         let context = get_context(false);
         testing_env!(context);
-        let mut contract = EigenTrustContract::new("social.near".to_string());
+        let mut contract = EigenrankContract::new("social.near".to_string());
 
         // Assuming you have a method to simulate the outcome of 'get_interactions'
         // For example, we pretend this method sets up the state as if interactions were fetched.
@@ -250,7 +250,7 @@ mod tests {
     fn test_interaction_with_external_contracts() {
         let context = get_context(false);
         testing_env!(context);
-        let mut contract = EigenTrustContract::new("mock_social_db.near".to_string());
+        let mut contract = EigenrankContract::new("mock_social_db.near".to_string());
 
         // Assuming 'mock_social_db' behaves in a certain way
         contract.mock_external_response(some_real_value);  // Implement mock responses

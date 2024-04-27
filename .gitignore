@@ -1,0 +1,21 @@
+# Ignore Rust build directory
+/target
+
+# Ignore backup files created by text editors
+*.swp
+*.bak
+*.tmp
+
+# Ignore Rust tooling files
+**/.rustc_info.json
+
+# System files
+.DS_Store
+
+# IDEs and editors
+/.idea
+/.vscode
+*.sublime-workspace
+
+# Ignore Cargo.lock file if you choose (typically ignored for libraries)
+Cargo.lock

@@ -1,32 +1,18 @@
 #!/bin/bash
-# Run the following before executing this build script:
-# chmod +x build.sh
 
-# Stop executing after any error
+# Exit if any command fails
 set -e
 
-echo "Cleaning old builds..."
-# Clean existing build artifacts to ensure a fresh start
-cargo clean
+# Ensure the 'res' directory exists to store the compiled WASM files
+mkdir -p res
 
-echo "Building contract..."
-# Build the Rust project and generate Wasm file specifically for the WASM target
-cargo build --target wasm32-unknown-unknown --release
+# Build the contract using cargo
+echo "Building the eigenrank contract..."
+cargo build --release --target wasm32-unknown-unknown
+echo "Build complete."
 
-echo "Post-processing..."
-# Navigate to the target directory where the wasm file is located
-cd target/wasm32-unknown-unknown/release
+# Copy the resulting wasm file to the res directory, adjust the name as necessary
+echo "Copying wasm file to the res directory..."
+cp target/wasm32-unknown-unknown/release/eigenrank.wasm res/
 
-# Using wasm-opt to optimize the wasm file, if wasm-opt is installed
-# This step is optional but recommended to reduce the wasm size and optimize execution
-# Ensure wasm-opt is installed and accessible in your PATH for this step to work
-if command -v wasm-opt &> /dev/null
-then
-    echo "Optimizing WASM using wasm-opt..."
-    wasm-opt -Oz -o eigentrust.wasm eigentrust_near.wasm
-else
-    echo "wasm-opt not found, skipping optimization."
-    mv eigentrust_near.wasm eigentrust.wasm
-fi
-
-echo "Build complete. Wasm file located at $(pwd)/eigentrust.wasm"
+echo "Final wasm file is ready in the 'res' directory."
